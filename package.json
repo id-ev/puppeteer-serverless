@@ -1,13 +1,13 @@
 {
   "name": "puppeteer-serverless",
   "version": "1.0.0",
-  "description": "Puppeteer на Vercel",
+  "description": "Puppeteer screenshot generator for Vercel",
   "main": "api/generate.js",
-  "scripts": {
-    "dev": "vercel dev"
-  },
   "dependencies": {
-    "puppeteer-core": "^10.1.0",
-    "chrome-aws-lambda": "^10.1.0"
+    "chrome-aws-lambda": "^10.1.0",
+    "puppeteer-core": "^10.1.0"
+  },
+  "engines": {
+    "node": ">=14.x"
   }
 }
