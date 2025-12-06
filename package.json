@@ -1,0 +1,13 @@
+{
+  "name": "puppeteer-serverless",
+  "version": "1.0.0",
+  "description": "Puppeteer на Vercel",
+  "main": "api/generate.js",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "puppeteer-core": "^19.0.0",
+    "chrome-aws-lambda": "^10.1.0"
+  }
+}
