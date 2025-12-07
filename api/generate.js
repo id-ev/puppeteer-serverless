@@ -16,18 +16,26 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'HTML is required' });
     }
 
-    console.log('Starting browser...');
+    console.log('=== START GENERATION ===');
+    console.log('HTML length:', html.length);
+    console.log('chromium version:', chromium.version);
+    console.log('chromium.args:', chromium.args);
+    
+    const execPath = await chromium.executablePath;
+    console.log('executablePath:', execPath);
+    
+    console.log('Launching browser...');
     
     // Запускаем браузер с chrome-aws-lambda
     browser = await chromium.puppeteer.launch({
-      args: chromium.args,
+      args: [...chromium.args, '--disable-dev-shm-usage'],
       defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
+      executablePath: execPath,
       headless: chromium.headless,
       ignoreHTTPSErrors: true,
     });
 
-    console.log('Browser started');
+    console.log('✅ Browser started successfully');
 
     const page = await browser.newPage();
     
@@ -53,7 +61,7 @@ module.exports = async (req, res) => {
     await browser.close();
     browser = null;
 
-    console.log('Screenshot taken, size:', screenshot.length);
+    console.log('✅ Screenshot taken, size:', screenshot.length);
 
     // Возвращаем PNG напрямую
     res.setHeader('Content-Type', 'image/png');
@@ -61,15 +69,24 @@ module.exports = async (req, res) => {
     return res.status(200).send(screenshot);
 
   } catch (error) {
-    console.error('Generation error:', error);
+    console.error('❌ Generation error:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
     
     if (browser) {
-      await browser.close();
+      try {
+        await browser.close();
+      } catch (e) {
+        console.error('Error closing browser:', e);
+      }
     }
 
     return res.status(500).json({
       error: 'Generation failed',
-      details: error.message
+      details: error.message,
+      errorName: error.name,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 };
